@@ -1,0 +1,16 @@
+const answerModel = require('./answer.model')
+const postModel = require('./post.model')
+const userModel = require('./user.model')
+const fileModel = require('./file.model')
+
+
+userModel.hasMany(postModel,{foreignkey: "author"})
+postModel.belongsTo(userModel,{foreignkey: "author"})
+
+userModel.hasMany(answerModel,{foreignkey: "author"})
+answerModel.belongsTo(userModel,{foreignkey: "author"})
+
+postModel.hasMany(answerModel,{foreignkey: "postId"})
+answerModel.belongsTo(postModel,{foreignkey: "postId"})
+
+module.exports= initModel
