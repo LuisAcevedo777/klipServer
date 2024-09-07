@@ -2,11 +2,12 @@ const {DataTypes} = require('sequelize')
 const db = require('../utils/db')
 
 
-const File = db.define('files',{
+const PostFilePivot = db.define('post_file_pivot',{
 
 id:{type: DataTypes.INTEGER, primaryKey:true, autoIncrement:true},
-name:{type:DataTypes.STRING(60)}
+idPost:{type: DataTypes.INTEGER},
+idFile:{type: DataTypes.INTEGER}
 
 })
 
-module.exports = File
+module.exports = PostFilePivot

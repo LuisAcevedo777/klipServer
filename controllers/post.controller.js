@@ -3,23 +3,22 @@ const postServices = require('../services/post.service')
 const getPostController=async(req,res)=>{
 
     try{
-const getPost = await getPostController.getOnePost()
+const getPost = await postServices.getAllPost()
 res.json(getPost)
 
     }catch(error){res.status(400).json(error)}
 
 }
+/*
+const createPostController=(req)=>{
 
-const createPostController=async(req,res)=>{
-    try{
-const newPost = req.body
-const postCreated = await postServices.createOnePost()
-res.status(201).send(postCreated)
-
-    }catch(error){res.status(400).json(error)}
+const newPost = req
+const postCreated = postServices.createOnePost(newPost)
 
 
 }
+
+
 const deletePostController=async(req,res)=>{
     try{
     const {id} = req.params
@@ -39,13 +38,8 @@ const updatePostController=async(req,res)=>{
        res.status(204).send()
     }catch(error){res.status(400).json(error)}
 
-}
+}*/
 
 
-module.exports = {
 
-    getPostController,
-    createPostController,
-    deletePostController,
-    updatePostController
-}
+module.exports= getPostController

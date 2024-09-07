@@ -1,4 +1,4 @@
-const answerServices = require('../services/Answer.service')
+const answerServices = require('../services/answer.service')
 
 const getAnswerController=()=>{
 
@@ -16,7 +16,7 @@ const deleteAnswerController=()=>{
 try{}catch(error){}
 
 }
-const updatePostController=()=>{
+const updateAnswerController=()=>{
 
 try{}catch(error){}
 

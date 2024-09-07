@@ -9,56 +9,129 @@ const userRoutes = require('../routes/user.route')
 const answerRoutes = require('../routes/answer.route')
 const postRoutes = require('../routes/post.route')
 const fileRoutes = require('../routes/file.route')
-const initModel = require('../models/initModel')
+const initModel = require('../models/initModels')
+const postServices = require('../services/post.service')
+
+
+
 
 initModel()
 
 db.authenticate().then((req,res)=>{console.log('db authenticated')}).catch((error)=>{console.log(error)})
-db.sync('auth').then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
+db.sync({force: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
 
 
-const PORT = process.env.PORT || 8000
+const PORT = process.env.PORT  || 8000
+
+
+
+
+  let archivos
+
+
 
 //multer
 
-const upload = multer({dest: '/public'})
+const upload = multer({dest: './public'})
+
 
 
 
 const app = express()
-
-app.use(express.static(path.join(__dirname,'../public')));
-app.use(userRoutes,answerRoutes,postRoutes,fileRoutes)
+app.use(cors())
+app.use(express.static(path.join(__dirname,'./public')));
 app.use(express.json())
 app.use(morgan('dev'))
-app.use(cors())
+app.use(postRoutes)
 
 
-app.post('/images/single', upload.single('imagenPerfil'), (req,res)=>{
-    console.log(upload);
+
+/*app.post('/images/single', upload.single('imagenPerfil'), (req,res)=>{
+    console.log(req.file);
     saveImage(req.file)
-    res.send('Termina')  })  //info del fichero en req.file
+    res.send('Termina')  })  //info del fichero en req.file*/
 
-    app.post('/images/multi', upload.array('photos',10), (req,res)=>{
-        console.log(req.files);
-        req.files.map(saveImage)
-        res.send('Termina Multi')  })
+  //consulta para Crear post
 
-
-        app.get('/images/single/:id',(req,res)=>{
-            try{ 
-              
-                res.sendFile(path.join(__dirname,"../public/b.mp3"))}
-           catch(error){res.status(400).json(error)}
-        
-        })
-
-function saveImage(file){
    
-const newPath = `./uploads/${file.originalname}`
-fs.renameSync(file.path, newPath)
+ app.post('/api/v1/files/multi', upload.array('archivos'),async (req,res)=>{
+  
+  let mensaje = req.body.mensaje
+  let files = req.files
+ 
+  files.map(saveImage)  
+   await postServices.createOnePost({'archivos': archivos, 'mensaje': mensaje})
+  .then(()=>{console.log('POST creado exitosamente')})
+  .catch((error)=>{console.log(error)})
+  
+    
+  }
+)
+
+const responseServer = app.post('/api/v1/files', upload.single('archivos'), singlePost)
+
+
+const getPromiseServer = app.get('/api/v1/files', getPromise )
+
+async function saveImage(file){
+   
+const newPath = `./public/${file.originalname}`
+await fs.renameSync(file.path, newPath)
+archivos.push(path.join(__dirname,newPath))
 return newPath
 }
+
+
+//Functions
+
+async function singlePost(req,res){
+  
+  let mensaje = req.body.mensaje
+   let file = req.file
+
+   if(file){ 
+   saveImage2(file)  
+  const postServicesResponse = await postServices.createOnePost({'archivos': archivos, 'mensaje': mensaje})
+  .then((res)=>{console.log('POST creado exitosamente')})
+  .catch((error)=>{console.log(error)})
+}else if(mensaje){
+
+  await postServices.createOnePost({'archivos': '', 'mensaje': mensaje})
+    .then(()=>{console.log('POST creado exitosamente')})
+    .catch((error)=>{console.log(error)})
+}else{
+
+ console.log('no se envió nada!') 
+}
+}
+
+async function getPromise(req,res){
+  try{ 
+      const response =await postServices.getAllPost()
+      res.json(response)
+     
+      }
+ catch(error){res.status(400).json(error)}
+
+}
+
+
+
+
+function saveImage2(file){
+   
+  const newPath = `./public/${file.originalname}`
+  fs.renameSync(file.path, newPath)
+  archivos = path.join(__dirname,newPath)
+  return newPath
+  }
+
+
+
+
+
+
+
 
 
 app.listen(PORT,()=>{console.log(`LISTENING IN PORT ${PORT}`)})

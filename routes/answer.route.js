@@ -1,6 +1,6 @@
 const {Router} = require('express')
 
-const {createAnswerController,getAnswerController,updateAnswerController,deleteAnswerController} = require('../controller/answer.controller.js')
+const {createAnswerController,getAnswerController,updateAnswerController,deleteAnswerController} = require('../controllers/answer.controller.js')
 
 
 const routes = Router()

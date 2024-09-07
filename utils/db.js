@@ -1,9 +1,9 @@
-const {Sequelize} = requie('sequelize')
+const {Sequelize} = require('sequelize')
 
 const db = new Sequelize({
 
     port: 5432,
-    database: 'dbone',
+    database: 'klubserver',
     username: 'postgres',
     password: 'root',
     dialect: 'postgres',

@@ -3,18 +3,14 @@ const postModel = require('../models/post.model.js')
 class postServices{
 
 
- static async getPost(){
-
-
+ static async getAllPost(){
 
   try{
-    const postGetted = await postModel.getAll()
-    return postGetted
+    const postGetted = await postModel.findAll()
     
+       return postGetted
         }catch(error){throw error}
     
-
-
 } 
 
  static async createOnePost(newPost){
