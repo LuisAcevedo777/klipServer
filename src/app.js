@@ -109,7 +109,8 @@ async function singlePost(req,res){
   .then((res)=>{console.log('POST creado exitosamente')})
   .catch((error)=>{console.log(error)})
 }else if(mensaje){
-
+   
+  
   await postServices.createOnePost({'archivos': '', 'mensaje': mensaje})
     .then(()=>{console.log('POST creado exitosamente')})
     .catch((error)=>{console.log(error)})
