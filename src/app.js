@@ -11,6 +11,7 @@ const postRoutes = require('../routes/post.route')
 const fileRoutes = require('../routes/file.route')
 const initModel = require('../models/initModels')
 const postServices = require('../services/post.service')
+const { error } = require('node:console')
 
 
 
@@ -22,150 +23,125 @@ db.sync({alter: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>
 
 
 const PORT = process.env.PORT  || 8000
-
-
-
-
-  let archivos
-
-
-
-//multer
-
-const upload = multer({dest: './public'})
-
-
-
-
 const app = express()
 const publicDir = path.join(__dirname,'public')
+
+
+  let archivos = []
+//multer
+
+const upload = multer({dest: publicDir})
+
 app.use(cors())
-app.use('/public',express.static(publicDir));
+app.use(express.static(publicDir));
 app.use(express.json())
 app.use(morgan('dev'))
 app.use(postRoutes)
 
 
 
-/*app.post('/images/single', upload.single('imagenPerfil'), (req,res)=>{
-    console.log(req.file);
-    saveImage(req.file)
-    res.send('Termina')  })  //info del fichero en req.file*/
-
-  //consulta para Crear post
- 
-
-
-      //ARRAY
-
    
  app.post('/api/v1/files/multi', upload.array('archivos'),async (req,res)=>{
   
   let mensaje = req.body.mensaje
   let files = req.files
+
+  archivos = []
  
-  files.map(saveImage)  
+  files.map(saveImage) 
+  
+  try{ 
    await postServices.createOnePost({'archivos': archivos, 'mensaje': mensaje})
-  .then(()=>{console.log('POST creado exitosamente')})
+  console.log('POST creado exitosamente')
   .then(res.status(201).send("post Creado"))
-  .catch((error)=>{console.log(error)})
+  res.status(201).send('post creado')
+  }catch(error){
   
-    
+     console.log('error creando post:', error)
+     res.status(500).send('error creando post')
   }
-)
-
-const firstGet = app.get('/',(req,res)=>{
-
-  const htmlResponse = `
-  
-  <html>
-  <head>
-  <title>Node y express</title>
-  <body><h1>soy un proyecto backend</h1></body>
-  </head></html>
-  `
-  res.send(htmlResponse)
 })
 
-const responseServer = app.post('/api/v1/files', upload.single('archivos'), singlePost)
 
 
-const getPromiseServer = app.get('/api/v1/files', getPromise )
+//single post
 
-const saveImage = async(file)=>{
+app.post('/api/v1/files', upload.single('archivos'), async (req, res) => {
+  const mensaje = req.body.mensaje;
+  const file = req.file;
+
+  if (file) {
+    saveImage(file);
+    try {
+      await postServices.createOnePost({ 'archivos': archivos, 'mensaje': mensaje });
+      console.log('POST creado exitosamente');
+      res.status(201).send('Post creado');
+    } catch (error) {
+      console.log('Error creando post:', error);
+      res.status(500).send('Error creando post');
+    }
+  } else if (mensaje) {
+    try {
+      await postServices.createOnePost({ 'archivos': '', 'mensaje': mensaje });
+      console.log('POST creado exitosamente');
+      res.status(201).send('Post creado');
+    } catch (error) {
+      console.log('Error creando post:', error);
+      res.status(500).send('Error creando post');
+    }
+  } else {
+    console.log('No se envió nada!');
+    res.status(400).send('No se envió nada!');
+  }
+});
+
+//get listar archivos
+
+app.get('/api/v1/files', (req,res)=> { 
+  fs.readdir(publicDir, (err, files)=>{
+
+ if(err){
+  console.error('Error leyendo el directorio:', err.message)
+  return res.status(500).json({error: 'error leyendo el directorio'})
+ }
+
+ const fileUrls = files.map(file=>({
+
+     name: file,
+     url: `/public/${file}`
+
+ }))
+  res.json(fileUrls)
+
+  })
+    })
+
+
+    //get RUTA RAIZ
+
+    const firstGet = app.get('/',(req,res)=>{
+
+      const htmlResponse = `
+      
+      <html>
+      <head>
+      <title>Node y express</title>
+      <body><h1>soy un proyecto backend</h1></body>
+      </head></html>
+      `
+      res.send(htmlResponse)
+    })
+
+function saveImage(file){
    
-const newPath = `./public/${file.originalname}`
-const newName = await fs.renameSync(file.path, newPath)
-archivos.push(path.join(__dirname,newPath))
-return newPath
+const newPath = path.join(publicDir, file.originalname)
+fs.renameSync(file.path, newPath)
+archivos.push(newPath)
+archivos.push(newPath)
 }
 
 
 //Functions
-
-async function singlePost(req,res){
-  
-  let mensaje = req.body.mensaje
-   let file = req.file
-
-   if(file){ 
-   saveImage2(file)  
-  const postServicesResponse = await postServices.createOnePost({'archivos': archivos, 'mensaje': mensaje})
-  .then((res)=>{console.log('POST creado exitosamente')})
-  .catch((error)=>{console.log(error)})
-}else if(mensaje){
-   
-  
-  await postServices.createOnePost({'archivos': '', 'mensaje': mensaje})
-    .then(()=>{console.log('POST creado exitosamente')})
-    .catch((error)=>{console.log(error)})
-}else{
-
- console.log('no se envió nada!') 
-}
-}
-
-async function getPromise(req,res){
-  try{ 
-    fs.readdir(publicDir, (err, files)=>{
-
-   if(err){
-
-    return res.status(500).send('Error leyendo el directorio')
-   }
-
-   const fileUrls = files.map(file=>{
-
-   return{
-
-       name: file,
-       url: `/public/${file}`
-
-   }
-   })
-    res.json(fileUrls)
-
-    })
-      }
- catch(error){res.status(400).json(error)}
-
-}
-
-
-
-
-function saveImage2(file){
-   
-  const newPath = `./public/${file.originalname}`
-  fs.renameSync(file.path, newPath)
-  archivos = path.join(__dirname,newPath)
-  return newPath
-  }
-
-
-
-
-
 
 
 
