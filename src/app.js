@@ -18,7 +18,7 @@ const postServices = require('../services/post.service')
 initModel()
 
 db.authenticate().then((req,res)=>{console.log('db authenticated')}).catch((error)=>{console.log(error)})
-db.sync({force: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
+db.sync({alter: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
 
 
 const PORT = process.env.PORT  || 8000
@@ -87,10 +87,10 @@ const responseServer = app.post('/api/v1/files', upload.single('archivos'), sing
 
 const getPromiseServer = app.get('/api/v1/files', getPromise )
 
-async function saveImage(file){
+const saveImage = async(file)=>{
    
 const newPath = `./public/${file.originalname}`
-await fs.renameSync(file.path, newPath)
+const newName = await fs.renameSync(file.path, newPath)
 archivos.push(path.join(__dirname,newPath))
 return newPath
 }
