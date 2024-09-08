@@ -52,6 +52,10 @@ app.use(postRoutes)
     res.send('Termina')  })  //info del fichero en req.file*/
 
   //consulta para Crear post
+ 
+
+
+      //ARRAY
 
    
  app.post('/api/v1/files/multi', upload.array('archivos'),async (req,res)=>{
@@ -122,9 +126,25 @@ async function singlePost(req,res){
 
 async function getPromise(req,res){
   try{ 
-      const response =await postServices.getAllPost()
-      res.json(response)
-     
+    fs.readdir(publicDir, (err, files)=>{
+
+   if(err){
+
+    return res.status(500).send('Error leyendo el directorio')
+   }
+
+   const fileUrls = files.map(file=>{
+
+   return{
+
+       name: file,
+       url: `/public/${file}`
+
+   }
+   })
+    res.json(fileUrls)
+
+    })
       }
  catch(error){res.status(400).json(error)}
 
