@@ -135,4 +135,5 @@ function saveImage2(file){
 
 
 
+console.log(__dirname)
 app.listen(PORT,()=>{console.log(`LISTENING IN PORT ${PORT}`)})
