@@ -69,6 +69,19 @@ app.use(postRoutes)
   }
 )
 
+const firstGet = app.get('/',(req,res)=>{
+
+  const htmlResponse = `
+  
+  <html>
+  <head>
+  <title>Node y express</title>
+  <body><h1>soy un proyecto backend</h1></body>
+  </head></html>
+  `
+  res.send(htmlResponse)
+})
+
 const responseServer = app.post('/api/v1/files', upload.single('archivos'), singlePost)
 
 
