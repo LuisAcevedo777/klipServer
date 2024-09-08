@@ -66,7 +66,7 @@ app.use(postRoutes)
   files.map(saveImage)  
    await postServices.createOnePost({'archivos': archivos, 'mensaje': mensaje})
   .then(()=>{console.log('POST creado exitosamente')})
-  .then(res.status(201).send(archivos))
+  .then(res.status(201).send("post Creado"))
   .catch((error)=>{console.log(error)})
   
     
