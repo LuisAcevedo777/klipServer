@@ -3,11 +3,11 @@ require('dotenv').config()
 const db = new Sequelize(process.env.DATABASE_URL,{
     
     port: 5432,
-    database: 'railway',
+    database: 'railway', //'klubserver',
     username: 'postgres',
-    password: 'FNQscGuLKlFDKyZgqoWAMgACipZupMkL',
+    password: 'FNQscGuLKlFDKyZgqoWAMgACipZupMkL',//'root', 
     dialect: 'postgres',
-    host: 'meticulous-empathy.railway.internal',
+    host: 'meticulous-empathy.railway.internal', // 'localhost',
     logging: false
 
 })

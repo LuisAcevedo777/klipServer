@@ -1,27 +1,12 @@
-const answerModel = require('./answer.model')
 const postModel = require('./post.model')
 const userModel = require('./user.model')
-const fileModel = require('./file.model')
-const postFilePivotModel = require('./postFilePivot.model')
-const answerFilePivotModel = require('./answerFilePivot.model')
+
 
 const initModels = ()=>{ 
 
 
-userModel.hasMany(answerModel,{foreignkey: "author"})
-answerModel.belongsTo(userModel,{foreignkey: "author"})
-
-postModel.hasMany(answerModel,{foreignkey: "postId"})
-answerModel.belongsTo(postModel,{foreignkey: "postId"})
-
-/*answerModel.belongsToMany(fileModel,{through: answerFilePivotModel, foreignkey: "idAnswer"})
-fileModel.belongsToMany(answerModel,{through: answerFilePivotModel, foreignkey: "idFile"})
-
 userModel.hasMany(postModel,{foreignkey: "author"})
 postModel.belongsTo(userModel,{foreignkey: "author"})
-
-postModel.belongsToMany(fileModel,{through: postFilePivotModel, foreignkey: "idPost"})
-fileModel.belongsToMany(postModel,{through: postFilePivotModel, foreignkey: "idFile"})*/
 
 }
 

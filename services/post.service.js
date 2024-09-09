@@ -28,32 +28,7 @@ throw error
 
 } 
 
- static async deleteOnePost(id){
-
-
-  try{
-    const postDelete = await postModel.destroy({where:{id}})
-    return postDelete
-    
-        }catch(error){throw error}
-    
-
-
-
-} 
-static async updateOnePost(postToUpdate,id){
-
-
-  try{ 
-    const result = await postModel.update(postToUpdate,{where:{id}})
-    return result
-  }
-  catch(error){throw error}
-
-
-} 
-
-
+ 
 
 }
 
