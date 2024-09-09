@@ -15,7 +15,7 @@ const postServices = require('../services/post.service')
 initModel()
 
 db.authenticate().then((req,res)=>{console.log('db authenticated')}).catch((error)=>{console.log(error)})
-db.sync({force: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
+db.sync({alter: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
 
 
 const PORT = process.env.PORT  || 8000
