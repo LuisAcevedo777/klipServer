@@ -39,7 +39,7 @@ app.use(morgan('dev'))
 
 
    
- app.post('/api/v1/files/multi', upload.array('archivos'),async (req,res)=>{
+ app.post('/api/v1/files/multi/post', upload.array('archivos'),async (req,res)=>{
   
   let mensaje = req.body.mensaje
   let files = req.files
@@ -65,7 +65,7 @@ app.use(morgan('dev'))
 
 
 
-app.post('/api/v1/files', upload.single('archivos'), async (req, res) => {
+app.post('/api/v1/files/post', upload.single('archivos'), async (req, res) => {
   const mensaje = req.body.mensaje;
   const file = req.file;
 
