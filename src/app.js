@@ -15,7 +15,7 @@ const postServices = require('../services/post.service')
 initModel()
 
 db.authenticate().then((req,res)=>{console.log('db authenticated')}).catch((error)=>{console.log(error)})
-db.sync({alter: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
+db.sync({force: true}).then((req,res)=>{console.log('db sync')}).catch((error)=>{console.log(error)})
 
 
 const PORT = process.env.PORT  || 8000
@@ -70,14 +70,15 @@ app.post('/api/v1/files/post', upload.single('archivos'), async (req, res) => {
   const file = req.file;
 
   if (file) {
-   const archivo = saveImage(file);
-    try {
-      await postServices.createOnePost({ 'archivos': archivo, 'mensaje': mensaje });
-      console.log('POST creado exitosamente');
-      res.status(201).send('Post creado');
+       try {
+      const postOnDataBase = await postServices.createOnePost({ 'archivos': file.originalname, 'mensaje': mensaje });
+      if(!postOnDataBase){return 'archivo no guardado en base de datos'}
+      const archivo = saveImage(file, postOnDataBase.id);
+      const updatePost = await postServices.updatePost({'archivos': postOnDataBase.id + "." + file.originalname}, postOnDataBase.id)
+      console.log(postOnDataBase);
+      res.status(201).send();
     } catch (error) {
-      console.log('Error creando post:', error);
-      res.status(500).send('Error creando post');
+      res.json(error);
     }
   } else if (mensaje) {
     try {
@@ -96,9 +97,9 @@ app.post('/api/v1/files/post', upload.single('archivos'), async (req, res) => {
 
 
 
-function saveImage(file){
-   
-  const newPath = path.join(publicDir, file.originalname)
+function saveImage(file, id){
+   const nameWithId = id + "."+ file.originalname
+  const newPath = path.join(publicDir, nameWithId)
   fs.renameSync(file.path, newPath)
 
   return file.originalname  // devuelve el nombre del archivo
@@ -118,21 +119,27 @@ function saveImage(file){
 
 
 
-app.get('/api/v1/files', (req,res)=> { 
-  fs.readdir(publicDir, (err, files)=>{
+app.get('/api/v1/files',async (req,res)=> { 
 
- if(err){
-  console.error('Error leyendo el directorio:', err.message)
-  return res.status(500).json({error: 'error leyendo el directorio'})
+ const posts = await postServices.getAllPost()
+ if(!posts){
+  console.error('No hay posts o no se pudo encontrar ninguno:', err.message)
+  return res.status(500).json({error: 'no hay posts o no se pudo encontrar'})
  }
+ fs.readdir(publicDir, (err, files)=>{        //lee en public todos lor archivos
 
- const fileUrls = files.map(file=>({
-
+  if(err){
+   console.error('Error leyendo el directorio:', err.message)
+   return res.status(500).json({error: 'error leyendo el directorio'})
+  }
+ const fileUrls = files.map(file=>({         
+     id:  parseInt(file.split('.')[0]),
      name: file,
      url: `/${file}`
 
  }))
-  res.json(fileUrls)
+ console.log(posts)
+  res.json(posts)
 
   })
     })

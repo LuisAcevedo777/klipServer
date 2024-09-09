@@ -9,9 +9,8 @@ const db = new Sequelize(process.env.DATABASE_URL,{
     dialect: 'postgres',
     host: 'meticulous-empathy.railway.internal', // 'localhost',
     logging: false
-
 })
 
 module.exports = db
 
-/*postgresql://klubserver_user:gKDEGOzY4LQclYPhqs0b6w2sccUSsOaQ@dpg-cregosrgbbvc73bqqdn0-a.oregon-postgres.render.com/klubserver*/
+

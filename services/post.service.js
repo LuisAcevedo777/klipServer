@@ -13,6 +13,8 @@ class postServices{
     
 } 
 
+
+
  static async createOnePost(newPost){
 try{
   const createdPost = await postModel.create(newPost)
@@ -28,7 +30,20 @@ throw error
 
 } 
 
- 
+static async updatePost(newPost, id){
+  try{
+    const updatedPost = await postModel.update(newPost,{where:{id}})
+    return updatedPost
+  
+  }
+  catch(error){
+  throw error
+  
+  }
+  
+  
+  
+  } 
 
 }
 
